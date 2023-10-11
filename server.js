@@ -64,4 +64,4 @@ privateChatsRouter(io);
 roomsChatRouter(io);
 
 
-httpServer.listen(PORT, () => console.log(`Listening at Port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Listening at Port ${PORT} frontURL ${frontURL}`));
