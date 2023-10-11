@@ -1,11 +1,11 @@
-import { errorsMidleware } from './middlewares/errorsMiddleware.js';
+import { errorsMidleware } from './src/middlewares/errorsMiddleware.js';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { Server } from 'socket.io';
 import http from 'http';
-import { dbConnect } from './services/dbConnect.js';
+import { dbConnect } from './src/services/dbConnect.js';
 
 // routes
 import {
@@ -15,7 +15,7 @@ import {
   userRouter,
   privateChatsRouter,
   roomsChatRouter,
-} from './routes/index.js';
+} from './src/routes/index.js';
 
 dotenv.config();
 const app = express();
