@@ -47,6 +47,8 @@ app.use(
   })
 );
 
+app.options('/auth/signup', cors());
+
 app.use(express.static('public'));
 app.use('/images', express.static('images'));
 
