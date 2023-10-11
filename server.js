@@ -26,12 +26,14 @@ const startupDevMode = app.get('env') === 'development';
 
 dbConnect();
 
+const frontURL = ['http://localhost:3000', 'http://localhost:3001', 'https://our-chat-app-two.vercel.app']
+
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
 app.use(
   cors({
-    origin: '*',
+    origin: frontURL,
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -49,10 +51,11 @@ app.use('/user', userRouter);
 // Necessary to resolve server crash when an error occurs
 app.use(errorsMidleware);
 
+
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: frontURL,
     optionsSuccessStatus: 200,
   },
 });
