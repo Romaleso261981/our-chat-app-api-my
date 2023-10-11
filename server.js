@@ -30,24 +30,18 @@ const frontURL = ['http://localhost:3000', 'http://localhost:3001', 'https://our
 
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
-app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '30mb', extended: true });
 
-app.options('/auth/signup', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*'); // Встановлюємо дозвіл на будь-яке джерело
-  res.header('Access-Control-Allow-Methods', 'POST');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.status(200).send();
-});
+// Обробник опціонального запиту OPTIONS для CORS
+app.options('/auth/signup', cors());
 
 app.use(
   cors({
     origin: frontURL,
     credentials: true,
     optionsSuccessStatus: 200,
-  })
-);
-
-app.options('/auth/signup', cors());
+  }
+));
 
 app.use(express.static('public'));
 app.use('/images', express.static('images'));
@@ -61,7 +55,6 @@ app.use('/user', userRouter);
 // Necessary to resolve server crash when an error occurs
 // app.use(errorsMidleware);
 
-
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -72,6 +65,5 @@ const io = new Server(httpServer, {
 
 privateChatsRouter(io);
 roomsChatRouter(io);
-
 
 httpServer.listen(PORT, () => console.log(`Listening at Port ${PORT} frontURL ${frontURL}`));
