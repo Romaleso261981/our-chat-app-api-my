@@ -32,8 +32,6 @@ const frontURL = ['http://localhost:3000', 'http://localhost:3001', 'https://our
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
-// Обробник опціонального запиту OPTIONS для CORS
-
 app.use(
 	cors({
 		origin: frontURL,
