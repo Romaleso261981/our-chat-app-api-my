@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
 app.use(
 	cors({
-		origin: frontURL,
+		origin: 'https://our-chat-my.netlify.app',
 		credentials: true,
 		optionsSuccessStatus: 200,
 	})
