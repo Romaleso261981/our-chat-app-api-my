@@ -62,4 +62,4 @@ const io = new Server(httpServer, {
 privateChatsRouter(io)
 roomsChatRouter(io)
 
-httpServer.listen(PORT, () => console.log(`Listening at Port ${PORT} frontURL ${frontURL}`))
+httpServer.listen(PORT, () => console.log(`Listening at Port ${PORT}`))
