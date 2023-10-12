@@ -2,6 +2,7 @@ import { errorsMidleware } from './src/middlewares/errorsMiddleware.js'
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import logger from "morgan"
 import dotenv from 'dotenv'
 import { Server } from 'socket.io'
 import http from 'http'
