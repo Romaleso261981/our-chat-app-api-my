@@ -26,7 +26,12 @@ const startupDevMode = app.get('env') === 'development'
 
 dbConnect()
 
-const frontURL = ['http://localhost:3000', 'http://localhost:3001', 'https://our-chat-app-two.vercel.app']
+const frontURL = [
+	'http://localhost:3000',
+	'http://localhost:3001',
+	'https://our-chat-app-two.vercel.app',
+	'https://our-chat-my.netlify.app',
+]
 
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
