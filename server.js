@@ -26,24 +26,12 @@ const startupDevMode = app.get('env') === 'development'
 
 dbConnect()
 
-const frontURL = [
-	'http://localhost:3000',
-	'http://localhost:3001',
-	'https://our-chat-app-two.vercel.app',
-	'https://our-chat-my.netlify.app',
-]
-
 // Set up the express application
-app.use(bodyParser.json({ limit: '30mb', extended: true }))
-app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
-app.use(
-	cors({
-		origin: 'https://our-chat-my.netlify.app',
-		credentials: true,
-		optionsSuccessStatus: 200,
-	})
-)
+app.use(logger(formatsLogger));
+app.use(cors());  
+app.use(express.json());
 
 app.use(express.static('public'))
 app.use('/images', express.static('images'))
@@ -60,7 +48,7 @@ app.use('/user', userRouter)
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
 	cors: {
-		origin: frontURL,
+		origin: 'https://our-chat-my.netlify.app',
 		optionsSuccessStatus: 200,
 	},
 })
