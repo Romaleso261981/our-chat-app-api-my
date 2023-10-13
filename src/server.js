@@ -29,6 +29,7 @@ dbConnect();
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
+app.use(express.static('public'));
 app.use(
   cors({
     origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
@@ -36,14 +37,12 @@ app.use(
   })
 );
 
-app.use(express.static('public'));
-app.use('/images', express.static('images'));
-
 // routes
 app.use('/', globalRouter);
 app.use('/auth', authRouter);
 app.use('/rooms', roomsRouter);
 app.use('/user', userRouter);
+app.use('/images', express.static('images'));
 
 // Necessary to resolve server crash when an error occurs
 // app.use(errorsMidleware);
