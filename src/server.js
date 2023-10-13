@@ -31,8 +31,7 @@ app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
 app.use(
   cors({
-    origin: '*',
-    credentials: true,
+    origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
     optionsSuccessStatus: 200,
   })
 );
@@ -47,12 +46,12 @@ app.use('/rooms', roomsRouter);
 app.use('/user', userRouter);
 
 // Necessary to resolve server crash when an error occurs
-app.use(errorsMidleware);
+// app.use(errorsMidleware);
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
     optionsSuccessStatus: 200,
   },
 });
