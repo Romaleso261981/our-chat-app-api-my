@@ -6,3 +6,4 @@ export const roomsRouter = Router();
 
 roomsRouter.get('/', ctrlWrapper(roomsController.GetRooms));
 roomsRouter.get('/:id', ctrlWrapper(roomsController.GetRoomById));
+// roomsRouter.post('/add', ctrlWrapper(roomsController.addNewRoom));

@@ -1,11 +1,7 @@
-import { ChatModel } from "../models/ChatModel.js"
-import { Rooms } from "../models/rooms.js"
+import { rooms } from '../data/rooms.js'
+import ChatModel from '../models/ChatModel.js'
 
 const GetRooms = async (req, res) => {
-	let rooms = await Rooms.find().exec()
-
-	rooms = rooms.map(({ id, title, image, description }) => ({ id, title, image, description }))
-
 	try {
 		res.status(200).json(rooms)
 	} catch (error) {
@@ -14,15 +10,15 @@ const GetRooms = async (req, res) => {
 }
 const GetRoomById = async (req, res) => {
 	const { id } = req.params
-
-	if (id === "undefined" && id === "null") {
-		console.error("chat_id is not defined")
+	console.log('id',id)
+	if (id === 'undefined' && id === 'null') {
+		console.error('chat_id is not defined')
 		return
 	}
 
 	try {
 		let newChatRoom = null
-		const chatRoom = await ChatModel.findOne({ id })
+		const chatRoom = await ChatModel.findById(id)
 		newChatRoom = chatRoom
 		res.status(200).json(newChatRoom)
 	} catch (error) {
@@ -30,4 +26,4 @@ const GetRoomById = async (req, res) => {
 	}
 }
 
-export const roomsController = { GetRooms, GetRoomById }
+export const roomsController = { GetRooms, GetRoomById };

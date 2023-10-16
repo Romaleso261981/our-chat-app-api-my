@@ -5,5 +5,5 @@ import { ctrlWrapper } from "../middlewares/ctrlWrapper.js";
 export const authRouter = express.Router();
 
 authRouter.post("/signup", ctrlWrapper(authController.signup));
-authRouter.post("/login", ctrlWrapper(authController.signin));
-authRouter.get("/logout/:userId", ctrlWrapper(authController.signout));
+authRouter.post("/login", ctrlWrapper(authController.login));
+authRouter.post("/logout", ctrlWrapper(authController.logout));
