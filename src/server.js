@@ -11,9 +11,10 @@ import { dbConnect } from './services/dbConnect.js';
 import {
   globalRouter,
   authRouter,
+  privatesRouter,
   roomsRouter,
   userRouter,
-  privateChatsRouter,
+  privatesSocketRouter,
   roomsChatRouter,
 } from './routes/index.js';
 
@@ -22,40 +23,42 @@ const app = express();
 
 // Load environment variables
 const PORT = process.env.SERVER_PORT || 8080;
-const startupDevMode = app.get('env') === 'development';
 
 dbConnect();
 
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
-app.use(express.static('public'));
 app.use(
   cors({
-    origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: ['https://our-chat-app-two.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
     optionsSuccessStatus: 200,
   })
 );
 
+app.use(express.static('public'));
+app.use('/images', express.static('images'));
+
 // routes
 app.use('/', globalRouter);
 app.use('/auth', authRouter);
+app.use('/privates', privatesRouter);
 app.use('/rooms', roomsRouter);
 app.use('/user', userRouter);
-app.use('/images', express.static('images'));
 
 // Necessary to resolve server crash when an error occurs
-// app.use(errorsMidleware);
+app.use(errorsMidleware);
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: ['https://our-chat-app-two.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
     optionsSuccessStatus: 200,
   },
 });
 
-privateChatsRouter(io);
+privatesSocketRouter(io);
 roomsChatRouter(io);
 
 
