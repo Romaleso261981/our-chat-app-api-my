@@ -5,12 +5,14 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import { Server } from 'socket.io'
 import http from 'http'
-import ChatModel from './models/ChatModel.js'
+// import ChatModel from './models/ChatModel.js'
 import { rooms } from './data/rooms.js'
 import { dbConnect } from './services/dbConnect.js'
 
 // routes
 import { globalRouter, authRouter, roomsRouter, privatsRouter, userRouter } from './routes/index.js'
+import { ChatModel } from './models/ChatModel.js'
+import { User } from './models/user.js'
 
 dotenv.config()
 const app = express()
@@ -29,7 +31,7 @@ app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(
 	cors({
-		origin: ['https://our-chat-my.netlify.app', 'https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
+		origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
 		credentials: true,
 		optionsSuccessStatus: 200,
 	})
@@ -48,7 +50,7 @@ app.use('/user', userRouter)
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
 	cors: {
-		origin: ['https://our-chat-my.netlify.app', 'https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
+		origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
 		optionsSuccessStatus: 200,
 	},
 })
@@ -69,44 +71,70 @@ io.on('connection', socket => {
 
 		io.emit('get-users', activeUsers)
 	})
-	socket.on('get-curent-chatRoom', async chat_id => {
-		console.log('get-curent-chatRoom', chat_id)
-
-		if (chat_id === undefined && chat_id === null) {
-			console.error('chat_id is not defined')
-			return
-		}
-
+	socket.on("get-curent-chatRoom", async (chat_id, userId) => {
 		try {
-			let newChatRoom = null
-			const chatRoom = await ChatModel.findById(chat_id)
-			newChatRoom = chatRoom
-			io.emit('get-chatRoom', newChatRoom)
-		} catch (error) {
-			console.error("Error while processing 'get-curent-chatRoom':", error)
-		}
-	})
-	socket.on('send-message', async ({ text, senderId, chatId, userName, userMood }) => {
-		try {
-			const chatRoom = await ChatModel.findById(chatId)
+			const chatRoom = await ChatModel.findOne({ id: chat_id })
+         console.log('chatRoom',chatRoom)
+			if (!chatRoom) {
+				const user = await User.findById(userId)
+				console.log('user',user)
 
-			if (chatRoom) {
-				chatRoom.messages.push({ text, senderId, chatId, userName, userMood, createdAt: Date.now() })
-				await chatRoom.save()
+				const newChatRoom = new ChatModel({
+					id: chat_id,
+					members: [],
+					messages: [],
+				})
+				await newChatRoom.save()
+				io.emit("get-chatRoom", newChatRoom)
+			} else {
+				// const populatedChatRoom = await chatRoom.populate({
+				// 	path: "messages",
+				// 	populate: {
+				// 		path: "user",
+				// 	},
+				// })
+				// console.log("populatedChatRoom", populatedChatRoom)
+
+				io.emit("get-chatRoom", chatRoom)
 			}
 		} catch (error) {
 			console.error("Error get-curent-chatRoom:", error)
 		}
+	})
+	socket.on("send-message", async ({ text, senderId, chatId }) => {
+		try {
+			const chatRoom = await ChatModel.findOne({ id: chatId })
+			console.log(text, senderId, chatId)
+			console.log('chatRoom',chatRoom)
 
-		// socket.emit('receive-message', data)
-		// socket.broadcast.emit('receive-message', data);
-		// socket.emit('receive-message', data);
+			// const user = await User.findById(senderId)
+			// const newMessage = new Message({ text, user, chatId })
+			// await newMessage.save()
 
-		const upDatedChat = await ChatModel.findById(chatId)
-		activeUsers.forEach(element => {
-			console.log('--------------', upDatedChat.messages[upDatedChat.messages.length - 1])
-			io.to(element.socketId).emit('receive-message', upDatedChat.messages[upDatedChat.messages.length - 1])
-		})
+			// if (chatRoom.messages) {
+			// 	chatRoom.messages.push(newMessage)
+			// 	await chatRoom.save()
+			// } else {
+			// 	chatRoom.messages = [newMessage]
+			// 	await chatRoom.save()
+			// }
+
+			// const upDatedChat = await chatRoom.populate({
+			// 	path: "messages",
+			// 	populate: {
+			// 		path: "user",
+			// 		model: "users",
+			// 	},
+			// })
+			// console.log("upDatedChat", upDatedChat)
+
+			activeUsers.forEach(element => {
+				io.to(element.socketId).emit("receive-message", { text, senderId, chatId })
+				// io.to(element.socketId).emit("receive-message", upDatedChat.messages.at(-1))
+			})
+		} catch (error) {
+			console.error("Error while processing 'get-curent-chatRoom':", error)
+		}
 	})
 	socket.on('disconnect', () => {
 		activeUsers = activeUsers.filter(user => user.socketId !== socket.id)
