@@ -21,7 +21,6 @@ const PORT = process.env.SERVER_PORT || 8080
 
 const startupDevMode = app.get('env') === 'development'
 const formatsLogger = startupDevMode ? 'dev' : 'short'
-const clientURL = startupDevMode ? process.env.TEST_URL : process.env.CLIENT_URL
 
 dbConnect()
 
@@ -30,7 +29,7 @@ app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(
 	cors({
-		origin: clientURL,
+		origin: ['https://our-chat-my.netlify.app', 'https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
 		credentials: true,
 		optionsSuccessStatus: 200,
 	})
@@ -49,7 +48,7 @@ app.use('/user', userRouter)
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
 	cors: {
-		origin: ['https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
+		origin: ['https://our-chat-my.netlify.app', 'https://our-chat-my.netlify.app', 'http://localhost:3000', 'http://localhost:3001'],
 		optionsSuccessStatus: 200,
 	},
 })
@@ -70,14 +69,10 @@ io.on('connection', socket => {
 
 		io.emit('get-users', activeUsers)
 	})
-	socket.on('add-user-in-curent-chatRoom', ({ userName }) => {
-		console.log('get-curent-chatRoom', userName)
-		io.emit('user-added-in-chatRoom', userName)
-	})
 	socket.on('get-curent-chatRoom', async chat_id => {
 		console.log('get-curent-chatRoom', chat_id)
 
-		if (chat_id === 'undefined' && chat_id === 'null') {
+		if (chat_id === undefined && chat_id === null) {
 			console.error('chat_id is not defined')
 			return
 		}
@@ -100,7 +95,7 @@ io.on('connection', socket => {
 				await chatRoom.save()
 			}
 		} catch (error) {
-			console.error("Error while processing 'get-curent-chatRoom':", error)
+			console.error("Error get-curent-chatRoom:", error)
 		}
 
 		// socket.emit('receive-message', data)
