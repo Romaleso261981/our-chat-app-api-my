@@ -26,19 +26,19 @@ const PORT = process.env.SERVER_PORT || 8080
 
 dbConnect()
 
-const corsOrigin = [
-	'https://our-chat-app-two.vercel.app',
-	'https://our-chat-my.netlify.app',
-	'http://localhost:3000',
-	'http://localhost:3001',
-]
+// const corsOrigin = [
+// 	'https://our-chat-app-two.vercel.app',
+// 	'https://our-chat-my.netlify.app',
+// 	'http://localhost:3000',
+// 	'http://localhost:3001',
+// ]
 
 // Set up the express application
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(
 	cors({
-		origin: corsOrigin,
+		origin: 'https://our-chat-my.netlify.app/chat-rooms',
 		credentials: true,
 		optionsSuccessStatus: 200,
 	})
@@ -60,7 +60,7 @@ app.use(errorsMidleware)
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, {
 	cors: {
-		origin: corsOrigin,
+		origin: 'https://our-chat-my.netlify.app/chat-rooms',
 		optionsSuccessStatus: 200,
 	},
 })
